@@ -21,3 +21,18 @@
 *Pour cela, on peut mettre un système de chiffrement afin de rendre les messages illisibles sans la clé de déchiffrement. De plus, il faut que chaque client puisse s'authentifier avant de se connecter au serveur.*
 
 
+## Chiffrement
+
+1. Est ce que urandom est un bon choix pour de la cryptographie ? Pourquoi ?
+
+
+
+2. Pourquoi utiliser ses primitives cryptographiques peut être dangereux ?
+
+
+
+3. Pourquoi malgré le chiffrement un serveur malveillant peut il nous nuire encore ?
+
+
+
+4. Quelle propriété manque t-il ici ?

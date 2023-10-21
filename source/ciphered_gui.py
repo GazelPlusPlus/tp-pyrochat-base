@@ -1,7 +1,8 @@
 from basic_gui import BasicGUI
-from cryptography.hazmat.primitives import hashes 
+from cryptography.hazmat.primitives import hashes, padding
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC 
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
 import dearpygui.dearpygui as dpg
 import logging
 import os
@@ -56,37 +57,60 @@ class CipheredGUI(BasicGUI):
 # code d'exemple : https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/
 
     def encrypt(self, message):
+
+        # Transformation du message string en bytes
+        message_bytes = bytes(message, "utf-8")
+
+        # Padding du message chiffré
+        padder = padding.PKCS7(NB_BYTES * 8).padder() # padding.PKCS7 prend un nombre de bits et non d'octets, d'où le x8
+        message_after_padding = padder.update(message_bytes)
+        message_after_padding += padder.finalize()
+
         # Génération de l'Initial Value
         iv = os.urandom(NB_BYTES)
+
         # Chiffrement du message grâ à l'algorithme AES (CTR)
         cipher = Cipher(algorithms.AES(self._key), modes.CTR(iv))
         encryptor = cipher.encryptor()
-        message_chiffre = encryptor.update(bytes(message, "utf-8")) + encryptor.finalize()
+        message_chiffre = encryptor.update(message_after_padding) + encryptor.finalize()
+
+        print(message_chiffre)
         # return (iv, message_chiffre)
-        return (serpent.tobytes(iv), serpent.tobytes(message_chiffre))
+        return (iv, message_chiffre)
 
 
     def decrypt(self, tuple_iv_message_chiffre):
+
         # Déconcaténation du tuple 
         iv, message_chiffre = tuple_iv_message_chiffre
+
         # Retransformation en bytes
         iv = serpent.tobytes(iv)
         message_chiffre = serpent.tobytes(message_chiffre)
+
         # Déchiffrement du message
         cipher = Cipher(algorithms.AES(self._key), modes.CTR(bytes(iv)))
         decryptor = cipher.decryptor()
         message_dechiffre = decryptor.update(message_chiffre) + decryptor.finalize()
+
+        # Unpadding du message
+        unpadder = padding.PKCS7(128).unpadder()
+        message_after_unpadding = unpadder.update(message_dechiffre)
+        message_after_unpadding+=unpadder.finalize()
+
         # Return le message_dechiffre
-        return str(message_dechiffre, "utf-8")
+        return str(message_after_unpadding, "utf-8")
 
     def send(self, text) -> None:
         text_chiffre = self.encrypt(text)
         return super().send(text_chiffre)
 
     def recv(self) -> None:
-        if self._callback is not None:
+        if self._callback is not None: 
             for user, message in self._callback.get():
+                # Déchiffrement du message reçu
                 message_dechiffre = self.decrypt(message)
+                # Affichage du message
                 self.update_text_screen(f"{user} : {message_dechiffre}")
             self._callback.clear()
     
