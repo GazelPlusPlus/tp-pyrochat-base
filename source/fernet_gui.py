@@ -28,6 +28,9 @@ class FernetGUI(CipheredGUI):
 
         self._key = base64.b64encode(password_apres_SHA256) 
 
+
+# code d'exemple : https://cryptography.io/en/latest/fernet/
+
     def encrypt(self, message):
         
         # Transformation du message string en bytes
