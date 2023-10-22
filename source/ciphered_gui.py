@@ -1,6 +1,6 @@
 from basic_gui import BasicGUI
 from cryptography.hazmat.primitives import hashes, padding
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC 
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 import dearpygui.dearpygui as dpg
@@ -46,12 +46,14 @@ class CipheredGUI(BasicGUI):
             dpg.add_button(label="Connect", callback=self.run_chat)
 
     def run_chat(self, sender, app_data) -> None:
+        # Utilise la fonction runchat de la classe BasicGUI
         super().run_chat(sender, app_data)
+
+        # Récupération du password de la textbox    
         password=dpg.get_value("connection_password")
 
         # Génération de la clé
         self._key = key_derivate_function.derive(bytes(password, "utf-8"))
-        print(self._key)
 
 
 # code d'exemple : https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/
@@ -63,8 +65,8 @@ class CipheredGUI(BasicGUI):
 
         # Padding du message chiffré
         padder = padding.PKCS7(NB_BYTES * 8).padder() # padding.PKCS7 prend un nombre de bits et non d'octets, d'où le x8
-        message_after_padding = padder.update(message_bytes)
-        message_after_padding += padder.finalize()
+        message_apres_padding = padder.update(message_bytes)
+        message_apres_padding += padder.finalize()
 
         # Génération de l'Initial Value
         iv = os.urandom(NB_BYTES)
@@ -72,10 +74,8 @@ class CipheredGUI(BasicGUI):
         # Chiffrement du message grâ à l'algorithme AES (CTR)
         cipher = Cipher(algorithms.AES(self._key), modes.CTR(iv))
         encryptor = cipher.encryptor()
-        message_chiffre = encryptor.update(message_after_padding) + encryptor.finalize()
+        message_chiffre = encryptor.update(message_apres_padding) + encryptor.finalize()
 
-        print(message_chiffre)
-        # return (iv, message_chiffre)
         return (iv, message_chiffre)
 
 
