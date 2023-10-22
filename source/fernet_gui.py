@@ -24,7 +24,7 @@ class FernetGUI(CipheredGUI):
         digest.update(bytes(password, "utf-8"))
         password_apres_SHA256 = digest.finalize()
 
-        self._key = base64.b64encode(password_apres_SHA256)
+        self._key = base64.b64encode(password_apres_SHA256) 
 
 
 
