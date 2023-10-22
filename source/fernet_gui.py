@@ -1,9 +1,11 @@
 from ciphered_gui import CipheredGUI
 from cryptography.hazmat.primitives import hashes
+from cryptography.fernet import Fernet
 
 import dearpygui.dearpygui as dpg
 import logging
 import base64 
+import serpent 
 
 
 
@@ -26,6 +28,31 @@ class FernetGUI(CipheredGUI):
 
         self._key = base64.b64encode(password_apres_SHA256) 
 
+    def encrypt(self, message):
+        
+        # Transformation du message string en bytes
+        message_bytes = bytes(message, "utf-8")
+
+        # Chiffrement du message
+        f = Fernet(self._key)
+        message_chiffre = f.encrypt(message_bytes)
+        
+        return message_chiffre
+    
+
+    def decrypt(self, message):
+
+        # Transformation du message en bytes
+        message_chiffre = serpent.tobytes(message)
+        
+        # Dechiffrement du message  
+        f = Fernet(self._key)
+        message_dechiffre_bytes = f.decrypt(message_chiffre)
+
+        # Transformation du message bytes en string
+        message_dechiffre = str(message_dechiffre_bytes, "utf-8")
+
+        return message_dechiffre
 
 
 
