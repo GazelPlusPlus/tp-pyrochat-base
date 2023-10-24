@@ -18,13 +18,14 @@ DEFAULT_VALUES = {
 
 # Nombre de bytes pour la génération de l'iv et de la taille de la clé
 NB_BYTES = 16
+ITERATIONS = 480000
 
 # Fonction de dérivation de clé
 key_derivate_function = PBKDF2HMAC(
     algorithm=hashes.SHA256(),
     length=NB_BYTES,
     salt=b'MoiAimePasPython',
-    iterations=480000
+    iterations=ITERATIONS
 )
 
 
@@ -96,7 +97,7 @@ class CipheredGUI(BasicGUI):
         # Unpadding du message
         unpadder = padding.PKCS7(128).unpadder()
         message_after_unpadding = unpadder.update(message_dechiffre)
-        message_after_unpadding+=unpadder.finalize()
+        message_after_unpadding += unpadder.finalize()
 
         # Return le message_dechiffre
         return str(message_after_unpadding, "utf-8")

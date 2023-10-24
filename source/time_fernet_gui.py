@@ -6,7 +6,7 @@ import serpent
 import time
 
 TTL = 30 # Time To Live en s
-
+TEMPS_SOUSTRAIT = 45 # Temps soustrayé pour la question 2 de la partie TTL
 
 
 class TimeFernetGUI(FernetGUI):
@@ -20,7 +20,7 @@ class TimeFernetGUI(FernetGUI):
 
         # Chiffrement du message
         f = Fernet(self._key)
-        message_chiffre = f.encrypt_at_time(message_bytes, int(time.time()) - 45)
+        message_chiffre = f.encrypt_at_time(message_bytes, int(time.time()) - TEMPS_SOUSTRAIT)
         
         return message_chiffre
     
@@ -38,7 +38,8 @@ class TimeFernetGUI(FernetGUI):
                                                         current_time=int(time.time()))
              
         except InvalidToken as e:
-            return self._log.error(f"Couldn't decrypt the message. InvalidToken")
+            self._log.error(f"Couldn't decrypt the message. InvalidToken")
+            raise InvalidToken
             
         message_dechiffre = str(message_dechiffre_bytes, "utf-8")
         return message_dechiffre
