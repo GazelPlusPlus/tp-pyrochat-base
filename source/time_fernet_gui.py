@@ -41,12 +41,10 @@ class TimeFernetGUI(FernetGUI):
             self._log.error(f"Couldn't decrypt the message. InvalidToken")
             raise InvalidToken
             
-        message_dechiffre = str(message_dechiffre_bytes, "utf-8")
-        return message_dechiffre
-        
-
-
         # Transformation du message bytes en string
+        message_dechiffre = str(message_dechiffre_bytes, "utf-8")
+        
+        return message_dechiffre
 
     
 if __name__ == "__main__":
